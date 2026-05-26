@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="障害福祉サービスの受給要件をステップ形式で確認できる無料シミュレーター。お住まいの市区町村の事業所情報もあわせて表示します。"
+    />
+    <title>障害福祉サービス受給要件シミュレーター｜参考情報ツール</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              welfare: {
+                cream: '#f7f3eb',
+                sage: '#e8f0e6',
+                forest: '#2d6a4f',
+              },
+            },
+          },
+        },
+      };
+    </script>
+    <link rel="stylesheet" href="css/custom.css" />
+  </head>
+  <body class="min-h-screen bg-gradient-to-b from-welfare-cream via-welfare-sage to-stone-100 text-stone-800">
+    <header class="border-b border-emerald-100/80 bg-white/90 backdrop-blur">
+      <div class="mx-auto flex max-w-4xl items-center justify-between px-4 py-4">
+        <a href="index.html" class="text-lg font-bold text-emerald-800">福祉サポートナビ</a>
+        <p class="hidden text-xs text-stone-500 sm:block">参考情報・非公式ツール</p>
+      </div>
+    </header>
+
+    <main class="mx-auto max-w-4xl px-4 py-10">
+      <section class="mb-10 text-center">
+        <p class="mb-2 inline-block rounded-full bg-emerald-100 px-3 py-1 text-xs font-medium text-emerald-800">
+          無料・登録不要
+        </p>
+        <h1 class="text-2xl font-bold leading-tight text-emerald-900 sm:text-3xl">
+          障害福祉サービス<br class="sm:hidden" />受給要件シミュレーター
+        </h1>
+        <p class="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-stone-600 sm:text-base">
+          お住まい・年齢・障害の状況・世帯の目安年収から、受給の可能性がある手当・サービスを<strong class="font-medium text-stone-700">参考</strong>としてご案内します。
+          あわせて、入力した市区町村に登録された事業所をデータベースから表示します。
+        </p>
+      </section>
+
+      <section class="rounded-2xl border border-emerald-100 bg-white/95 p-6 shadow-lg shadow-emerald-900/5 sm:p-8">
+        <div class="mb-6 flex items-center justify-between">
+          <p id="stepLabel" class="text-sm font-medium text-emerald-800">ステップ 1 / 4</p>
+          <div class="flex gap-2" aria-hidden="true">
+            <span data-step-indicator="1" class="flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold bg-emerald-600 text-white">1</span>
+            <span data-step-indicator="2" class="flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold bg-stone-200 text-stone-600">2</span>
+            <span data-step-indicator="3" class="flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold bg-stone-200 text-stone-600">3</span>
+            <span data-step-indicator="4" class="flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold bg-stone-200 text-stone-600">4</span>
+          </div>
+        </div>
+
+        <form id="simulatorForm" novalidate>
+          <p id="stepError" class="mb-4 hidden rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800" role="alert"></p>
+
+          <!-- Step 1 -->
+          <div data-step-panel="1" class="space-y-4">
+            <h2 class="text-lg font-semibold text-emerald-900">お住まいの市区町村</h2>
+            <p class="text-sm text-stone-600">事業所検索は<strong>入力と完全一致</strong>します。データ登録時と同じ表記で入力してください。</p>
+            <label for="municipality" class="block text-sm font-medium text-stone-700">市区町村名</label>
+            <input
+              type="text"
+              id="municipality"
+              name="municipality"
+              required
+              autocomplete="address-level2"
+              placeholder="例：東京都渋谷区、大阪市北区"
+              class="w-full rounded-lg border border-stone-200 bg-stone-50 px-4 py-3 text-stone-800 placeholder:text-stone-400 focus:border-emerald-500 focus:bg-white"
+            />
+          </div>
+
+          <!-- Step 2 -->
+          <div data-step-panel="2" class="hidden space-y-4">
+            <h2 class="text-lg font-semibold text-emerald-900">年齢</h2>
+            <label for="age" class="block text-sm font-medium text-stone-700">満年齢</label>
+            <input
+              type="number"
+              id="age"
+              name="age"
+              min="0"
+              max="120"
+              required
+              placeholder="例：35"
+              class="w-full max-w-xs rounded-lg border border-stone-200 bg-stone-50 px-4 py-3 focus:border-emerald-500 focus:bg-white"
+            />
+          </div>
+
+          <!-- Step 3 -->
+          <div data-step-panel="3" class="hidden space-y-4">
+            <h2 class="text-lg font-semibold text-emerald-900">障害種別・等級</h2>
+            <div>
+              <label for="disabilityType" class="block text-sm font-medium text-stone-700">障害の種別（手帳・診断の目安）</label>
+              <select
+                id="disabilityType"
+                name="disabilityType"
+                class="mt-1 w-full rounded-lg border border-stone-200 bg-stone-50 px-4 py-3 focus:border-emerald-500 focus:bg-white"
+              ></select>
+            </div>
+            <div>
+              <label for="disabilityGrade" class="block text-sm font-medium text-stone-700">等級・区分</label>
+              <select
+                id="disabilityGrade"
+                name="disabilityGrade"
+                class="mt-1 w-full rounded-lg border border-stone-200 bg-stone-50 px-4 py-3 focus:border-emerald-500 focus:bg-white"
+              ></select>
+            </div>
+          </div>
+
+          <!-- Step 4 -->
+          <div data-step-panel="4" class="hidden space-y-4">
+            <h2 class="text-lg font-semibold text-emerald-900">世帯の年収（目安）</h2>
+            <fieldset>
+              <legend class="sr-only">世帯年収</legend>
+              <div class="space-y-2" id="incomeOptions">
+                <!-- filled by script -->
+              </div>
+            </fieldset>
+          </div>
+
+          <div class="mt-8 flex flex-wrap gap-3 border-t border-stone-100 pt-6">
+            <button
+              type="button"
+              id="btnPrev"
+              class="hidden rounded-lg border border-stone-300 bg-white px-5 py-2.5 text-sm font-medium text-stone-700 hover:bg-stone-50"
+            >
+              戻る
+            </button>
+            <button
+              type="button"
+              id="btnNext"
+              class="rounded-lg bg-emerald-700 px-6 py-2.5 text-sm font-semibold text-white hover:bg-emerald-800"
+            >
+              次へ
+            </button>
+            <button
+              type="submit"
+              id="btnSubmit"
+              class="hidden rounded-lg bg-amber-600 px-6 py-2.5 text-sm font-semibold text-white hover:bg-amber-700"
+            >
+              判定する
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <section id="resultsSection" class="mt-12 hidden">
+        <h2 class="mb-4 text-xl font-bold text-emerald-900">受給の可能性がある手当・サービス（参考）</h2>
+        <p class="mb-6 text-sm text-stone-600">
+          以下は入力内容に基づく<strong>参考一覧</strong>です。受給の可否・金額は自治体・年金事務所等で必ずご確認ください。
+        </p>
+        <ul id="eligibilityList" class="space-y-4"></ul>
+      </section>
+
+      <section id="facilitiesSection" class="mt-12 hidden">
+        <h2 id="facilitiesTitle" class="mb-2 text-xl font-bold text-emerald-900">市区町村の事業所</h2>
+        <p id="facilitiesStatus" class="mb-6 text-sm text-stone-500">事業所情報を読み込み中…</p>
+        <div id="facilitiesList" class="grid gap-4 sm:grid-cols-2"></div>
+      </section>
+
+      <aside class="mt-12 rounded-xl border border-amber-100 bg-amber-50/80 p-5 text-sm leading-relaxed text-amber-950">
+        <h2 class="font-semibold">ご利用にあたって</h2>
+        <ul class="mt-2 list-inside list-disc space-y-1">
+          <li>本サイトは公的機関の公式サイトではありません。</li>
+          <li>判定結果は医療・福祉の専門家による診断・決定ではありません。</li>
+          <li>最新の法令・自治体の条例は各自治体の窓口でご確認ください。</li>
+        </ul>
+      </aside>
+    </main>
+
+    <footer class="mt-16 border-t border-emerald-100 bg-white">
+      <div class="mx-auto max-w-4xl px-4 py-10">
+        <nav class="flex flex-wrap justify-center gap-6 text-sm" aria-label="フッターナビゲーション">
+          <a href="privacy.html" class="text-emerald-800 hover:underline">プライバシーポリシー</a>
+          <a href="contact.html" class="text-emerald-800 hover:underline">お問い合わせ</a>
+          <a href="profile.html" class="text-emerald-800 hover:underline">運営者プロフィール</a>
+        </nav>
+        <p class="mt-6 text-center text-xs text-stone-500">
+          &copy; <span id="year"></span> 福祉サポートナビ — GitHub + Cloudflare Pages でホスティング
+        </p>
+      </div>
+    </footer>
+
+    <script>
+      document.getElementById('year').textContent = new Date().getFullYear();
+    </script>
+    <script src="js/config.js"></script>
+    <script src="js/simulator.js"></script>
+    <script src="js/facilities.js"></script>
+    <script>
+      (function () {
+        const container = document.getElementById('incomeOptions');
+        if (!container) return;
+        container.innerHTML = INCOME_BRACKETS.map(
+          (b, i) => `
+          <label class="flex cursor-pointer items-start gap-3 rounded-lg border border-stone-200 bg-stone-50 p-4 has-[:checked]:border-emerald-500 has-[:checked]:bg-emerald-50/50">
+            <input type="radio" name="income" id="income-${b.id}" value="${b.id}" class="mt-1 text-emerald-600" ${i === 3 ? 'checked' : ''} />
+            <span class="text-sm text-stone-700">${b.label}</span>
+          </label>
+        `
+        ).join('');
+      })();
+    </script>
+    <script src="js/app.js"></script>
+  </body>
+</html>

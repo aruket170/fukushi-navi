@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="福祉サポートナビへのお問い合わせはこちらから。" />
+    <title>お問い合わせ｜福祉サポートナビ</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="css/custom.css" />
+  </head>
+  <body class="min-h-screen bg-[#f7f3eb] text-stone-800">
+    <header class="border-b border-emerald-100 bg-white">
+      <div class="mx-auto max-w-3xl px-4 py-4">
+        <a href="index.html" class="text-lg font-bold text-emerald-800">福祉サポートナビ</a>
+      </div>
+    </header>
+
+    <main class="mx-auto max-w-3xl px-4 py-10">
+      <h1 class="text-2xl font-bold text-emerald-900">お問い合わせ</h1>
+      <p class="mt-4 text-sm leading-relaxed text-stone-600">
+        サイトのご意見・データの訂正・広告掲載に関するお問い合わせは、下記フォームよりお送りください。
+        <strong class="text-stone-800">受給可否の個別相談・申請代行は行っておりません。</strong>
+        福祉サービスのご相談は、お住まいの市区町村の障害福祉担当へお問い合わせください。
+      </p>
+
+      <form
+        id="contactForm"
+        class="mt-8 space-y-5 rounded-2xl border border-emerald-100 bg-white p-6 shadow-sm"
+        action="https://formspree.io/f/YOUR_FORM_ID"
+        method="POST"
+      >
+        <p class="text-xs text-stone-500">
+          ※ 送信には
+          <a href="https://formspree.io" class="text-emerald-700 underline" target="_blank" rel="noopener noreferrer">Formspree</a>
+          等の無料フォームサービスを設定してください（<code class="text-xs">action</code> の URL を差し替え）。
+        </p>
+
+        <div>
+          <label for="name" class="block text-sm font-medium text-stone-700">お名前</label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            required
+            class="mt-1 w-full rounded-lg border border-stone-200 px-4 py-2.5 focus:border-emerald-500"
+          />
+        </div>
+
+        <div>
+          <label for="email" class="block text-sm font-medium text-stone-700">メールアドレス</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            required
+            class="mt-1 w-full rounded-lg border border-stone-200 px-4 py-2.5 focus:border-emerald-500"
+          />
+        </div>
+
+        <div>
+          <label for="subject" class="block text-sm font-medium text-stone-700">件名</label>
+          <select id="subject" name="subject" class="mt-1 w-full rounded-lg border border-stone-200 px-4 py-2.5">
+            <option value="site">サイト全般</option>
+            <option value="data">事業所データの訂正</option>
+            <option value="ads">広告・提携</option>
+            <option value="other">その他</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="message" class="block text-sm font-medium text-stone-700">お問い合わせ内容</label>
+          <textarea
+            id="message"
+            name="message"
+            rows="6"
+            required
+            class="mt-1 w-full rounded-lg border border-stone-200 px-4 py-2.5 focus:border-emerald-500"
+          ></textarea>
+        </div>
+
+        <p id="formMessage" class="hidden text-sm" role="status"></p>
+
+        <button
+          type="submit"
+          class="w-full rounded-lg bg-emerald-700 py-3 text-sm font-semibold text-white hover:bg-emerald-800 sm:w-auto sm:px-8"
+        >
+          送信する
+        </button>
+      </form>
+
+      <p class="mt-6 text-xs text-stone-500">
+        送信いただいた情報は、
+        <a href="privacy.html" class="text-emerald-700 underline">プライバシーポリシー</a>
+        に基づき取り扱います。
+      </p>
+    </main>
+
+    <footer class="mt-12 border-t border-emerald-100 bg-white py-8">
+      <nav class="flex flex-wrap justify-center gap-6 text-sm">
+        <a href="index.html" class="text-emerald-800 hover:underline">トップ</a>
+        <a href="privacy.html" class="text-emerald-800 hover:underline">プライバシーポリシー</a>
+        <a href="contact.html" class="text-emerald-800 hover:underline">お問い合わせ</a>
+        <a href="profile.html" class="text-emerald-800 hover:underline">運営者プロフィール</a>
+      </nav>
+    </footer>
+
+    <script>
+      document.getElementById('contactForm')?.addEventListener('submit', function (e) {
+        const action = this.getAttribute('action') || '';
+        if (action.includes('YOUR_FORM_ID')) {
+          e.preventDefault();
+          const msg = document.getElementById('formMessage');
+          msg.textContent =
+            'フォームの送信先が未設定です。contact.html の form action を Formspree 等の URL に変更してください。';
+          msg.className = 'text-sm text-amber-800 bg-amber-50 border border-amber-200 rounded-lg p-3';
+          msg.classList.remove('hidden');
+        }
+      });
+    </script>
+  </body>
+</html>
