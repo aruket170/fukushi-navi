@@ -1,9 +1,15 @@
 /**
  * Supabase facilities テーブルから市区町村完全一致で事業所を取得
+ * カラム: name, type, area, address, url
  */
 
+/** @param {string} url */
+function getSupabaseRestBase(url) {
+  return (url || '').trim().replace(/\/$/, '').replace(/\/rest\/v1\/?$/i, '');
+}
+
 /**
- * @param {string} municipality ユーザー入力の市区町村（完全一致）
+ * @param {string} municipality ユーザー入力の市区町村（area カラムと完全一致）
  * @returns {Promise<{ data: object[]|null, error: string|null }>}
  */
 async function fetchFacilitiesByMunicipality(municipality) {
@@ -22,10 +28,11 @@ async function fetchFacilitiesByMunicipality(municipality) {
     };
   }
 
-  const base = url.replace(/\/$/, '');
+  const base = getSupabaseRestBase(url);
+  const areaColumn = municipalityColumn || 'area';
   const params = new URLSearchParams();
-  params.set('select', '*');
-  params.set(municipalityColumn, `eq.${trimmed}`);
+  params.set('select', 'name,type,area,address,url');
+  params.set(areaColumn, `eq.${trimmed}`);
 
   const endpoint = `${base}/rest/v1/facilities?${params.toString()}`;
 
@@ -76,23 +83,29 @@ function facilityField(row, keys, fallback = '—') {
  * @returns {HTMLElement}
  */
 function createFacilityCard(facility) {
-  const name = facilityField(facility, ['name', 'facility_name', '事業所名'], '事業所名未登録');
-  const address = facilityField(facility, ['address', '所在地', 'full_address']);
-  const phone = facilityField(facility, ['phone', 'tel', '電話番号']);
-  const service = facilityField(facility, ['service_type', 'services', 'サービス種別'], '');
-  const description = facilityField(facility, ['description', 'memo', '備考'], '');
+  const name = facilityField(facility, ['name'], '事業所名未登録');
+  const type = facilityField(facility, ['type'], '');
+  const area = facilityField(facility, ['area'], '');
+  const address = facilityField(facility, ['address'], '');
+  const url = facilityField(facility, ['url'], '');
 
   const card = document.createElement('article');
   card.className =
     'rounded-xl border border-emerald-100 bg-white p-5 shadow-sm transition hover:shadow-md';
+
+  const safeUrl = url && url !== '—' && /^https?:\/\//i.test(url) ? url : '';
+  const linkHtml = safeUrl
+    ? `<p class="mt-3"><a href="${escapeHtml(safeUrl)}" target="_blank" rel="noopener noreferrer" class="text-sm font-medium text-emerald-700 underline hover:text-emerald-900">公式サイト・詳細を見る</a></p>`
+    : '';
+
   card.innerHTML = `
     <h4 class="text-lg font-semibold text-emerald-900">${escapeHtml(name)}</h4>
-    ${service && service !== '—' ? `<p class="mt-1 text-sm font-medium text-emerald-700">${escapeHtml(service)}</p>` : ''}
+    ${type && type !== '—' ? `<p class="mt-1 text-sm font-medium text-emerald-700">${escapeHtml(type)}</p>` : ''}
     <dl class="mt-3 space-y-1 text-sm text-stone-600">
-      <div class="flex gap-2"><dt class="shrink-0 text-stone-500">住所</dt><dd>${escapeHtml(address)}</dd></div>
-      <div class="flex gap-2"><dt class="shrink-0 text-stone-500">電話</dt><dd>${escapeHtml(phone)}</dd></div>
+      ${area && area !== '—' ? `<div class="flex gap-2"><dt class="shrink-0 text-stone-500">地域</dt><dd>${escapeHtml(area)}</dd></div>` : ''}
+      ${address && address !== '—' ? `<div class="flex gap-2"><dt class="shrink-0 text-stone-500">住所</dt><dd>${escapeHtml(address)}</dd></div>` : ''}
     </dl>
-    ${description && description !== '—' ? `<p class="mt-3 text-sm leading-relaxed text-stone-600">${escapeHtml(description)}</p>` : ''}
+    ${linkHtml}
   `;
   return card;
 }
