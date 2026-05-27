@@ -216,6 +216,18 @@ async function runJudgment() {
       facilitiesList.appendChild(createFacilityCard(row));
     });
   }
+
+  try {
+    await fetch('http://localhost:5678/webhook-test/b54babe8-36c0-4534-8640-3380d6b62e3c', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(input),
+    });
+  } catch (error) {
+    console.warn('Webhook送信に失敗しました:', error);
+  }
 }
 
 function escapeHtml(str) {
